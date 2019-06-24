@@ -1,0 +1,22 @@
+{
+    "name": "fmizzell/csv-parser",
+    "description": "A state-machine drive, csv parser and validator.",
+    "license": "GPL-3.0-only",
+    "authors": [
+        {
+            "name": "fmizzell",
+            "email": "fmizzell.dev@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "CsvParser\\": "src/"
+        }
+    },
+    "require": {
+        "fmizzell/maquina": "dev-master"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.4"
+    }
+}
