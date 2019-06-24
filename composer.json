@@ -1,6 +1,6 @@
 {
     "name": "fmizzell/csv-parser",
-    "description": "A state-machine drive, csv parser and validator.",
+    "description": "A state-machine driven, CSV parser and validator.",
     "license": "GPL-3.0-only",
     "authors": [
         {
