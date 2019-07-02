@@ -63,7 +63,7 @@ class Csv implements ICsv
     $this->machine = $this->getMachine();
   }
 
-  public function feed($chunk)
+  public function feed(string $chunk)
   {
     if (strlen($chunk) > 0) {
       $chars = str_split($chunk);
@@ -105,6 +105,10 @@ class Csv implements ICsv
     $this->field = "";
     $this->fields = [];
     $this->records = [];
+
+    $this->machine = $this->getMachine();
+    $this->lastCharType = null;
+    $this->quoted = FALSE;
   }
 
   public function finish()
