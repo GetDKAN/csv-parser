@@ -48,7 +48,7 @@ class Csv implements ICsv
     $this->trailingDelimiter = TRUE;
   }
 
-  public static function getParser($delimiter, $quote, $escape, array $record_end)
+  public static function getParser($delimiter = ",", $quote = '"', $escape = "\\", $record_end = ["\n", "\r"])
   {
     return new self($delimiter, $quote, $escape, $record_end);
   }
