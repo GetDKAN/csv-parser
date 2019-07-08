@@ -12,7 +12,7 @@ class CsvParserTest extends \PHPUnit\Framework\TestCase {
   }
 
   private function assertNumberOfFieldsAndValues($record, $values) {
-    $this->assertEquals(count($record), count($values));
+    $this->assertEquals(count($values), count($record));
     foreach ($record as $key => $value) {
       $this->assertEquals($values[$key], $value);
     }
@@ -291,6 +291,26 @@ class CsvParserTest extends \PHPUnit\Framework\TestCase {
 
     $parser->feed('H,F ' . "\n" . 'G,B,');
     $parser->finish();
+    $record = $parser->getRecord();
+    $values = ['H', 'F'];
+    $this->assertNumberOfFieldsAndValues($record, $values);
+    $record = $parser->getRecord();
+    $values = ['G', 'B'];
+    $this->assertNumberOfFieldsAndValues($record, $values);
+    $this->assertNull($parser->getRecord());
+  }
+
+  public function testMultiEnd() {
+    $parser = $this->parse('H,F' . "\n\r" . 'G,B');
+    $record = $parser->getRecord();
+    $values = ['H', 'F'];
+    $this->assertNumberOfFieldsAndValues($record, $values);
+    $record = $parser->getRecord();
+    $values = ['G', 'B'];
+    $this->assertNumberOfFieldsAndValues($record, $values);
+    $this->assertNull($parser->getRecord());
+
+    $parser = $this->parse('H,F' . "\n\r\n" . 'G,B');
     $record = $parser->getRecord();
     $values = ['H', 'F'];
     $this->assertNumberOfFieldsAndValues($record, $values);
