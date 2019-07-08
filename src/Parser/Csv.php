@@ -13,6 +13,7 @@ class Csv implements ICsv
   const STATE_NO_CAPTURE = "s_no_capture";
   const STATE_ESCAPE = "s_escape";
   const STATE_RECORD_END = "s_record_end";
+  const STATE_REDUNDANT_RECORD_END = "s_redundant_record_end";
 
   const STATE_QUOTE_INITIAL = "s_q_initial";
   const STATE_QUOTE_FINAL = "s_q_final";
@@ -133,12 +134,15 @@ class Csv implements ICsv
     // NEW FIELD.
     $machine->addTransition(self::STATE_NEW_FIELD,[
       self::CHAR_TYPE_DELIMITER,
-      self::CHAR_TYPE_RECORD_END
     ], self::STATE_NEW_FIELD);
 
     $machine->addTransition(self::STATE_NEW_FIELD,[
       self::CHAR_TYPE_BLANK,
     ], self::STATE_NO_CAPTURE);
+
+    $machine->addTransition(self::STATE_NEW_FIELD,[
+      self::CHAR_TYPE_RECORD_END
+    ], self::STATE_RECORD_END);
 
     $machine->addTransition(self::STATE_NEW_FIELD,[
       self::CHAR_TYPE_OTHER
@@ -160,13 +164,60 @@ class Csv implements ICsv
     ], self::STATE_QUOTE_INITIAL);
 
     $machine->addTransition(self::STATE_NO_CAPTURE,[
-      self::CHAR_TYPE_DELIMITER,
       self::CHAR_TYPE_RECORD_END,
+    ], self::STATE_RECORD_END);
+
+    $machine->addTransition(self::STATE_NO_CAPTURE,[
+      self::CHAR_TYPE_DELIMITER
     ], self::STATE_NEW_FIELD);
 
     $machine->addTransition(self::STATE_NO_CAPTURE,[
       self::CHAR_TYPE_ESCAPE
     ], self::STATE_ESCAPE);
+
+    // RECORD END
+    $machine->addTransition(self::STATE_RECORD_END,[
+      self::CHAR_TYPE_DELIMITER,
+    ], self::STATE_NEW_FIELD);
+
+    $machine->addTransition(self::STATE_RECORD_END,[
+      self::CHAR_TYPE_BLANK,
+    ], self::STATE_NO_CAPTURE);
+
+    $machine->addTransition(self::STATE_RECORD_END,[
+      self::CHAR_TYPE_RECORD_END
+    ], self::STATE_REDUNDANT_RECORD_END);
+
+    $machine->addTransition(self::STATE_RECORD_END,[
+      self::CHAR_TYPE_OTHER
+    ], self::STATE_CAPTURE);
+
+    // REDUNDANT_RECORD_END
+
+    $machine->addTransition(self::STATE_REDUNDANT_RECORD_END,[
+      self::CHAR_TYPE_BLANK,
+    ], self::STATE_NO_CAPTURE);
+
+    $machine->addTransition(self::STATE_REDUNDANT_RECORD_END,[
+      self::CHAR_TYPE_OTHER,
+    ], self::STATE_CAPTURE);
+
+    $machine->addTransition(self::STATE_REDUNDANT_RECORD_END,[
+      self::CHAR_TYPE_QUOTE,
+    ], self::STATE_QUOTE_INITIAL);
+
+    $machine->addTransition(self::STATE_REDUNDANT_RECORD_END,[
+      self::CHAR_TYPE_RECORD_END,
+    ], self::STATE_REDUNDANT_RECORD_END);
+
+    $machine->addTransition(self::STATE_REDUNDANT_RECORD_END,[
+      self::CHAR_TYPE_DELIMITER
+    ], self::STATE_NEW_FIELD);
+
+    $machine->addTransition(self::STATE_REDUNDANT_RECORD_END,[
+      self::CHAR_TYPE_ESCAPE
+    ], self::STATE_ESCAPE);
+
 
     // CAPTURE.
     $machine->addTransition(self::STATE_CAPTURE,[
@@ -179,9 +230,12 @@ class Csv implements ICsv
     ], self::STATE_ESCAPE);
 
     $machine->addTransition(self::STATE_CAPTURE,[
-      self::CHAR_TYPE_RECORD_END,
       self::CHAR_TYPE_DELIMITER
     ], self::STATE_NEW_FIELD);
+
+    $machine->addTransition(self::STATE_CAPTURE,[
+      self::CHAR_TYPE_RECORD_END,
+    ], self::STATE_RECORD_END);
 
     $machine->addTransition(self::STATE_CAPTURE,[self::CHAR_TYPE_ESCAPE], self::STATE_ESCAPE);
 
@@ -249,8 +303,11 @@ class Csv implements ICsv
 
     $machine->addTransition(self::STATE_QUOTE_FINAL,[
       self::CHAR_TYPE_DELIMITER,
-      self::CHAR_TYPE_RECORD_END
     ], self::STATE_NEW_FIELD);
+
+    $machine->addTransition(self::STATE_QUOTE_FINAL,[
+      self::CHAR_TYPE_RECORD_END
+    ], self::STATE_RECORD_END);
 
     return $machine;
   }
@@ -289,8 +346,10 @@ class Csv implements ICsv
    */
   private function createNewRecord() {
     $this->createNewField();
-    $this->records[] = $this->fields;
-    $this->fields = [];
+    if (!empty($this->fields)) {
+      $this->records[] = $this->fields;
+      $this->fields = [];
+    }
   }
 
   /**
@@ -310,7 +369,7 @@ class Csv implements ICsv
 
   private function processTransition($initialStates, $endStates, $input) {
     foreach ($endStates as $endState) {
-      if ($this->lastCharType == self::CHAR_TYPE_RECORD_END && $endState == self::STATE_NEW_FIELD) {
+      if ($endState == self::STATE_RECORD_END) {
         $this->createNewRecord();
       }
       else if ($endState == self::STATE_NEW_FIELD) {
