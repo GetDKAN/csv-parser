@@ -192,6 +192,10 @@ class Csv implements ICsv
       self::CHAR_TYPE_OTHER
     ], self::STATE_CAPTURE);
 
+    $machine->addTransition(self::STATE_RECORD_END,[
+      self::CHAR_TYPE_QUOTE
+    ], self::STATE_QUOTE_INITIAL);
+
     // REDUNDANT_RECORD_END
 
     $machine->addTransition(self::STATE_REDUNDANT_RECORD_END,[
