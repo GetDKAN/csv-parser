@@ -10,7 +10,8 @@
     ],
     "autoload": {
         "psr-4": {
-            "CsvParser\\": "src/"
+            "CsvParser\\": "src/",
+            "CsvParserTest\\": "test/"
         }
     },
     "require": {
