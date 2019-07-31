@@ -1,5 +1,5 @@
 {
-    "name": "fmizzell/csv-parser",
+    "name": "getdkan/csv-parser",
     "description": "A state-machine driven, CSV parser and validator.",
     "license": "GPL-3.0-only",
     "authors": [
