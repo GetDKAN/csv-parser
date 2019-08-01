@@ -16,7 +16,7 @@
     },
     "require": {
         "fmizzell/maquina": "1.0.0",
-        "fmizzell/contracts": "~0.1.0"
+        "getdkan/contracts": "~0.1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.4"
