@@ -390,4 +390,37 @@ class Csv implements ParserInterface
             }
         }
     }
+
+    public function jsonSerialize()
+    {
+        return (object) [
+            'delimiter' => $this->delimiter,
+            'quote' => $this->quote,
+            'escape' => $this->escape,
+            'recordEnd' => $this->recordEnd,
+            'records' => $this->records,
+            'fields' => $this->fields,
+            'field' => $this->field,
+            'machine' => $this->machine
+        ];
+    }
+
+    /**
+     * @todo Replace this with a new hydrateable trait from upstream (contracts?)
+    */
+    public static function hydrate($json)
+    {
+        $data = json_decode($json);
+
+        $reflector = new \ReflectionClass(self::class);
+        $object = $reflector->newInstanceWithoutConstructor();
+
+        $reflector = new \ReflectionClass($object);
+        foreach ($data as $property => $value) {
+            $p = $reflector->getProperty($property);
+            $p->setAccessible(true);
+            $p->setValue($object, $value);
+        }
+        return $object;
+    }
 }
