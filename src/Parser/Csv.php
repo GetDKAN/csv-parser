@@ -127,7 +127,7 @@ class Csv implements ParserInterface
         }
     }
 
-    private function getMachine()
+    public static function getMachine()
     {
         $machine = new MachineOfMachines([self::STATE_NEW_FIELD]);
         $machine->addEndState(self::STATE_NEW_FIELD);
@@ -416,11 +416,20 @@ class Csv implements ParserInterface
         $object = $reflector->newInstanceWithoutConstructor();
 
         $reflector = new \ReflectionClass($object);
+
         foreach ($data as $property => $value) {
             $p = $reflector->getProperty($property);
             $p->setAccessible(true);
             $p->setValue($object, $value);
         }
+        // The machine property needs to be hydrated, so make a second pass.
+        $p = $reflector->getProperty('machine');
+        $p->setAccessible(true);
+        $p->setValue($object, MachineOfMachines::hydrate(
+            json_encode($data->machine),
+            self::getMachine()
+        ));
+
         return $object;
     }
 }
