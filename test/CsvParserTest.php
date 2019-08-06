@@ -352,4 +352,24 @@ class CsvParserTest extends \PHPUnit\Framework\TestCase
         $this->assertNumberOfFieldsAndValues($record, $values);
         $this->assertNull($parser->getRecord());
     }
+
+    public function testSerialization()
+    {
+        $parser = Csv::getParser(',', '"', "\\", ["\r", "\n"]);
+        $parser->feed("a,b,c,d\n");
+
+        $json = json_encode($parser->jsonSerialize());
+
+        $parser2 = Csv::hydrate($json);
+        $this->assertTrue($parser2 instanceof Csv);
+        $parser2->feed("e,f,g,h");
+
+        $parser2->finish();
+
+        $record1 = $parser2->getRecord();
+        $this->assertEquals($record1[0], 'a');
+
+        $record2 = $parser2->getRecord();
+        $this->assertEquals($record2[0], 'e');
+    }
 }
