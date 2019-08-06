@@ -361,7 +361,6 @@ class CsvParserTest extends \PHPUnit\Framework\TestCase
         $json = json_encode($parser->jsonSerialize());
 
         $parser2 = Csv::hydrate($json);
-        print_r($parser2);
         $this->assertTrue($parser2 instanceof Csv);
         $parser2->feed("e,f,g,h");
 
