@@ -288,11 +288,11 @@ class CsvParserTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($parser->getRecord());
     }
 
-  /**
-   * Double quote parsing requires looking ahead or back as we process a string.
-   * We went to make sure that when a string is cut in the middle of double
-   * quote scaping, that the parser can still handle it without problems.
-   */
+    /**
+     * Double quote parsing requires looking ahead or back as we process a string.
+     * We went to make sure that when a string is cut in the middle of double
+     * quote scaping, that the parser can still handle it without problems.
+     */
     public function testBrokenLookAhead()
     {
         $string1 = '"S "';
