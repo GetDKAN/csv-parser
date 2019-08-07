@@ -152,15 +152,20 @@ class Csv implements ParserInterface
     private function processTransition($initialStates, $endStates, $input)
     {
         foreach ($endStates as $endState) {
-            if ($endState == sm::STATE_RECORD_END) {
-                $this->createNewRecord();
-            } elseif ($endState == sm::STATE_NEW_FIELD) {
-                $this->createNewField();
-            } elseif ($endState == sm::STATE_CAPTURE || $endState == sm::STATE_QUOTE_CAPTURE) {
-                $this->addCharToField($input);
-            } elseif ($endState == sm::STATE_QUOTE_INITIAL) {
-                $this->quoted = true;
-            }
+            $this->processTransitionHelper($endState, $input);
+        }
+    }
+
+    private function processTransitionHelper($endState, $input)
+    {
+        if ($endState == sm::STATE_RECORD_END) {
+            $this->createNewRecord();
+        } elseif ($endState == sm::STATE_NEW_FIELD) {
+            $this->createNewField();
+        } elseif ($endState == sm::STATE_CAPTURE || $endState == sm::STATE_QUOTE_CAPTURE) {
+            $this->addCharToField($input);
+        } elseif ($endState == sm::STATE_QUOTE_INITIAL) {
+            $this->quoted = true;
         }
     }
 
