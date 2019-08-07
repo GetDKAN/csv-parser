@@ -29,6 +29,7 @@
     },
     "require": {
         "fmizzell/maquina": "~1.0.0",
-        "getdkan/contracts": "~0.1.0"
+        "getdkan/contracts": "~0.1.0",
+        "ext-json": "*"
     }
 }
