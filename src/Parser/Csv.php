@@ -3,33 +3,12 @@
 
 namespace CsvParser\Parser;
 
-use Maquina\StateMachine\MachineOfMachines;
 use Contracts\ParserInterface;
+use Maquina\StateMachine\MachineOfMachines;
+use CsvParser\Parser\StateMachine as sm;
 
 class Csv implements ParserInterface
 {
-
-    const STATE_NEW_FIELD = "s_new_field";
-    const STATE_CAPTURE = "s_capture";
-    const STATE_NO_CAPTURE = "s_no_capture";
-    const STATE_ESCAPE = "s_escape";
-    const STATE_RECORD_END = "s_record_end";
-    const STATE_REDUNDANT_RECORD_END = "s_redundant_record_end";
-
-    const STATE_QUOTE_INITIAL = "s_q_initial";
-    const STATE_QUOTE_FINAL = "s_q_final";
-    const STATE_QUOTE_CAPTURE = "s_q_capture";
-    const STATE_QUOTE_NO_CAPTURE = "s_q_no_capture";
-    const STATE_QUOTE_ESCAPE = "s_q_escape";
-    const STATE_QUOTE_ESCAPE_QUOTE = "s_q_escape_quote";
-
-    const CHAR_TYPE_DELIMITER = "c_delimiter";
-    const CHAR_TYPE_QUOTE = "c_quote";
-    const CHAR_TYPE_ESCAPE = "c_escape";
-    const CHAR_TYPE_RECORD_END = "c_record_end";
-    const CHAR_TYPE_BLANK = "c_blank";
-    const CHAR_TYPE_OTHER = "c_other";
-
     private $delimiter;
     private $quote;
     private $escape;
@@ -63,7 +42,7 @@ class Csv implements ParserInterface
         $this->quote = $quote;
         $this->escape = $escape;
         $this->reset();
-        $this->machine = $this->getMachine();
+        $this->machine = new StateMachine();
     }
 
     public function feed(string $chunk)
@@ -108,250 +87,47 @@ class Csv implements ParserInterface
         $this->fields = [];
         $this->records = [];
 
-        $this->machine = $this->getMachine();
+        $this->machine = new StateMachine();
         $this->lastCharType = null;
         $this->quoted = false;
     }
 
     public function finish()
     {
-      // There will be csv strings that do not end in a "end of record" char.
-      // This will flush them.
-        if ($this->lastCharType != self::CHAR_TYPE_RECORD_END) {
+        // There will be csv strings that do not end in a "end of record" char.
+        // This will flush them.
+        if ($this->lastCharType != sm::CHAR_TYPE_RECORD_END) {
             $this->feed($this->recordEnd[0]);
         }
 
-      // We just flushed the machine. This should never happen.
+        // We just flushed the machine. This should never happen.
         if (!$this->machine->isCurrentlyAtAnEndState()) {
             throw new \Exception("Machine did not halt");
         }
     }
 
-    public static function getMachine()
-    {
-        $machine = new MachineOfMachines([self::STATE_NEW_FIELD]);
-        $machine->addEndState(self::STATE_NEW_FIELD);
-        $machine->addEndState(self::STATE_RECORD_END);
-
-      // NEW FIELD.
-        $machine->addTransition(self::STATE_NEW_FIELD, [
-        self::CHAR_TYPE_DELIMITER,
-        ], self::STATE_NEW_FIELD);
-
-        $machine->addTransition(self::STATE_NEW_FIELD, [
-        self::CHAR_TYPE_BLANK,
-        ], self::STATE_NO_CAPTURE);
-
-        $machine->addTransition(self::STATE_NEW_FIELD, [
-        self::CHAR_TYPE_RECORD_END
-        ], self::STATE_RECORD_END);
-
-        $machine->addTransition(self::STATE_NEW_FIELD, [
-        self::CHAR_TYPE_OTHER
-        ], self::STATE_CAPTURE);
-
-        $machine->addTransition(self::STATE_NEW_FIELD, [self::CHAR_TYPE_QUOTE], self::STATE_QUOTE_INITIAL);
-
-      // NO CAPTURE
-        $machine->addTransition(self::STATE_NO_CAPTURE, [
-        self::CHAR_TYPE_BLANK,
-        ], self::STATE_NO_CAPTURE);
-
-        $machine->addTransition(self::STATE_NO_CAPTURE, [
-        self::CHAR_TYPE_OTHER,
-        ], self::STATE_CAPTURE);
-
-        $machine->addTransition(self::STATE_NO_CAPTURE, [
-        self::CHAR_TYPE_QUOTE,
-        ], self::STATE_QUOTE_INITIAL);
-
-        $machine->addTransition(self::STATE_NO_CAPTURE, [
-        self::CHAR_TYPE_RECORD_END,
-        ], self::STATE_RECORD_END);
-
-        $machine->addTransition(self::STATE_NO_CAPTURE, [
-        self::CHAR_TYPE_DELIMITER
-        ], self::STATE_NEW_FIELD);
-
-        $machine->addTransition(self::STATE_NO_CAPTURE, [
-        self::CHAR_TYPE_ESCAPE
-        ], self::STATE_ESCAPE);
-
-      // RECORD END
-        $machine->addTransition(self::STATE_RECORD_END, [
-        self::CHAR_TYPE_DELIMITER,
-        ], self::STATE_NEW_FIELD);
-
-        $machine->addTransition(self::STATE_RECORD_END, [
-        self::CHAR_TYPE_BLANK,
-        ], self::STATE_NO_CAPTURE);
-
-        $machine->addTransition(self::STATE_RECORD_END, [
-        self::CHAR_TYPE_RECORD_END
-        ], self::STATE_REDUNDANT_RECORD_END);
-
-        $machine->addTransition(self::STATE_RECORD_END, [
-        self::CHAR_TYPE_OTHER
-        ], self::STATE_CAPTURE);
-
-        $machine->addTransition(self::STATE_RECORD_END, [
-        self::CHAR_TYPE_QUOTE
-        ], self::STATE_QUOTE_INITIAL);
-
-      // REDUNDANT_RECORD_END
-
-        $machine->addTransition(self::STATE_REDUNDANT_RECORD_END, [
-        self::CHAR_TYPE_BLANK,
-        ], self::STATE_NO_CAPTURE);
-
-        $machine->addTransition(self::STATE_REDUNDANT_RECORD_END, [
-        self::CHAR_TYPE_OTHER,
-        ], self::STATE_CAPTURE);
-
-        $machine->addTransition(self::STATE_REDUNDANT_RECORD_END, [
-        self::CHAR_TYPE_QUOTE,
-        ], self::STATE_QUOTE_INITIAL);
-
-        $machine->addTransition(self::STATE_REDUNDANT_RECORD_END, [
-        self::CHAR_TYPE_RECORD_END,
-        ], self::STATE_REDUNDANT_RECORD_END);
-
-        $machine->addTransition(self::STATE_REDUNDANT_RECORD_END, [
-        self::CHAR_TYPE_DELIMITER
-        ], self::STATE_NEW_FIELD);
-
-        $machine->addTransition(self::STATE_REDUNDANT_RECORD_END, [
-        self::CHAR_TYPE_ESCAPE
-        ], self::STATE_ESCAPE);
-
-
-      // CAPTURE.
-        $machine->addTransition(self::STATE_CAPTURE, [
-        self::CHAR_TYPE_OTHER,
-        self::CHAR_TYPE_BLANK,
-        ], self::STATE_CAPTURE);
-
-        $machine->addTransition(self::STATE_CAPTURE, [
-        self::CHAR_TYPE_ESCAPE,
-        ], self::STATE_ESCAPE);
-
-        $machine->addTransition(self::STATE_CAPTURE, [
-        self::CHAR_TYPE_DELIMITER
-        ], self::STATE_NEW_FIELD);
-
-        $machine->addTransition(self::STATE_CAPTURE, [
-        self::CHAR_TYPE_RECORD_END,
-        ], self::STATE_RECORD_END);
-
-        $machine->addTransition(self::STATE_CAPTURE, [self::CHAR_TYPE_ESCAPE], self::STATE_ESCAPE);
-
-      // ESCAPE.
-        $machine->addTransition(self::STATE_ESCAPE, [
-        self::CHAR_TYPE_DELIMITER,
-        self::CHAR_TYPE_QUOTE,
-        self::CHAR_TYPE_ESCAPE,
-        self::CHAR_TYPE_RECORD_END,
-        self::CHAR_TYPE_BLANK,
-        self::CHAR_TYPE_OTHER,
-        ], self::STATE_CAPTURE);
-
-      // QUOTE INITIAL.
-        $machine->addTransition(self::STATE_QUOTE_INITIAL, [
-        self::CHAR_TYPE_DELIMITER,
-        self::CHAR_TYPE_ESCAPE,
-        self::CHAR_TYPE_RECORD_END,
-        self::CHAR_TYPE_BLANK,
-        self::CHAR_TYPE_OTHER,
-        ], self::STATE_QUOTE_CAPTURE);
-
-        $machine->addTransition(self::STATE_QUOTE_INITIAL, [self::CHAR_TYPE_QUOTE], self::STATE_QUOTE_ESCAPE_QUOTE);
-        $machine->addTransition(self::STATE_QUOTE_INITIAL, [self::CHAR_TYPE_QUOTE], self::STATE_QUOTE_FINAL);
-
-      // QUOTE CAPTURE.
-        $machine->addTransition(self::STATE_QUOTE_CAPTURE, [
-        self::CHAR_TYPE_DELIMITER,
-        self::CHAR_TYPE_RECORD_END,
-        self::CHAR_TYPE_BLANK,
-        self::CHAR_TYPE_OTHER,
-        ], self::STATE_QUOTE_CAPTURE);
-
-        $machine->addTransition(self::STATE_QUOTE_CAPTURE, [
-        self::CHAR_TYPE_ESCAPE,
-        ], self::STATE_QUOTE_ESCAPE);
-
-        $machine->addTransition(self::STATE_QUOTE_CAPTURE, [
-        self::CHAR_TYPE_QUOTE,
-        ], self::STATE_QUOTE_FINAL);
-
-        $machine->addTransition(self::STATE_QUOTE_CAPTURE, [
-        self::CHAR_TYPE_QUOTE,
-        ], self::STATE_QUOTE_ESCAPE_QUOTE);
-
-      // QUOTE ESCAPE QUOTE
-        $machine->addTransition(self::STATE_QUOTE_ESCAPE_QUOTE, [
-        self::CHAR_TYPE_QUOTE,
-        ], self::STATE_QUOTE_CAPTURE);
-
-      // QUOTE ESCAPE
-        $machine->addTransition(self::STATE_QUOTE_ESCAPE, [
-        self::CHAR_TYPE_ESCAPE,
-        self::CHAR_TYPE_DELIMITER,
-        self::CHAR_TYPE_RECORD_END,
-        self::CHAR_TYPE_BLANK,
-        self::CHAR_TYPE_OTHER,
-        self::CHAR_TYPE_QUOTE,
-        ], self::STATE_QUOTE_CAPTURE);
-
-      // QUOTE FINAL.
-        $machine->addTransition(self::STATE_QUOTE_FINAL, [
-        self::CHAR_TYPE_BLANK,
-        ], self::STATE_QUOTE_FINAL);
-
-        $machine->addTransition(self::STATE_QUOTE_FINAL, [
-        self::CHAR_TYPE_DELIMITER,
-        ], self::STATE_NEW_FIELD);
-
-        $machine->addTransition(self::STATE_QUOTE_FINAL, [
-        self::CHAR_TYPE_RECORD_END
-        ], self::STATE_RECORD_END);
-
-        return $machine;
-    }
-
-  /**
-   * Private method.
-   */
     private function getCharType($char)
     {
+        $type = sm::CHAR_TYPE_OTHER;
         if (in_array($char, $this->recordEnd)) {
-            return self::CHAR_TYPE_RECORD_END;
+            $type = sm::CHAR_TYPE_RECORD_END;
+        } elseif ($char == $this->delimiter) {
+            $type = sm::CHAR_TYPE_DELIMITER;
+        } elseif ($char == $this->quote) {
+            $type = sm::CHAR_TYPE_QUOTE;
+        } elseif ($char == $this->escape) {
+            $type = sm::CHAR_TYPE_ESCAPE;
+        } elseif (ctype_space($char)) {
+            $type = sm::CHAR_TYPE_BLANK;
         }
-        if ($char == $this->delimiter) {
-            return self::CHAR_TYPE_DELIMITER;
-        }
-        if ($char == $this->quote) {
-            return self::CHAR_TYPE_QUOTE;
-        }
-        if ($char == $this->escape) {
-            return self::CHAR_TYPE_ESCAPE;
-        }
-        if (ctype_space($char)) {
-            return self::CHAR_TYPE_BLANK;
-        }
-        return self::CHAR_TYPE_OTHER;
+        return $type;
     }
 
-  /**
-   * Private method.
-   */
     private function addCharToField($char)
     {
         $this->field .= $char;
     }
 
-  /**
-   * Private method.
-   */
     private function createNewRecord()
     {
         $this->createNewField();
@@ -361,9 +137,6 @@ class Csv implements ParserInterface
         }
     }
 
-  /**
-   * Private method.
-   */
     private function createNewField()
     {
         if ($this->quoted) {
@@ -379,15 +152,20 @@ class Csv implements ParserInterface
     private function processTransition($initialStates, $endStates, $input)
     {
         foreach ($endStates as $endState) {
-            if ($endState == self::STATE_RECORD_END) {
-                $this->createNewRecord();
-            } elseif ($endState == self::STATE_NEW_FIELD) {
-                $this->createNewField();
-            } elseif ($endState == self::STATE_CAPTURE || $endState == self::STATE_QUOTE_CAPTURE) {
-                $this->addCharToField($input);
-            } elseif ($endState == self::STATE_QUOTE_INITIAL) {
-                $this->quoted = true;
-            }
+            $this->processTransitionHelper($endState, $input);
+        }
+    }
+
+    private function processTransitionHelper($endState, $input)
+    {
+        if ($endState == sm::STATE_RECORD_END) {
+            $this->createNewRecord();
+        } elseif ($endState == sm::STATE_NEW_FIELD) {
+            $this->createNewField();
+        } elseif ($endState == sm::STATE_CAPTURE || $endState == sm::STATE_QUOTE_CAPTURE) {
+            $this->addCharToField($input);
+        } elseif ($endState == sm::STATE_QUOTE_INITIAL) {
+            $this->quoted = true;
         }
     }
 
@@ -407,7 +185,7 @@ class Csv implements ParserInterface
 
     /**
      * @todo Replace this with a new hydrateable trait from upstream (contracts?)
-    */
+     */
     public static function hydrate($json)
     {
         $data = json_decode($json);
@@ -425,10 +203,10 @@ class Csv implements ParserInterface
         // The machine property needs to be hydrated, so make a second pass.
         $p = $reflector->getProperty('machine');
         $p->setAccessible(true);
-        $p->setValue($object, MachineOfMachines::hydrate(
-            json_encode($data->machine),
-            self::getMachine()
-        ));
+        $machine = new StateMachine();
+        $machine = MachineOfMachines::hydrate(json_encode($data->machine), $machine);
+
+        $p->setValue($object, $machine);
 
         return $object;
     }
