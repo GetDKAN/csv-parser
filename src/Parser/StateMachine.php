@@ -194,12 +194,6 @@ class StateMachine extends MachineOfMachines
             [self::CHAR_TYPE_RECORD_END],
             self::STATE_RECORD_END
         );
-
-        $this->addTransition(
-            self::STATE_CAPTURE,
-            [self::CHAR_TYPE_ESCAPE],
-            self::STATE_ESCAPE
-        );
     }
 
     private function addEscapeTransitions()
