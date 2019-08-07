@@ -108,22 +108,19 @@ class Csv implements ParserInterface
 
     private function getCharType($char)
     {
+        $type = sm::CHAR_TYPE_OTHER;
         if (in_array($char, $this->recordEnd)) {
-            return sm::CHAR_TYPE_RECORD_END;
+            $type = sm::CHAR_TYPE_RECORD_END;
+        } elseif ($char == $this->delimiter) {
+            $type = sm::CHAR_TYPE_DELIMITER;
+        } elseif ($char == $this->quote) {
+            $type = sm::CHAR_TYPE_QUOTE;
+        } elseif ($char == $this->escape) {
+            $type = sm::CHAR_TYPE_ESCAPE;
+        } elseif (ctype_space($char)) {
+            $type = sm::CHAR_TYPE_BLANK;
         }
-        if ($char == $this->delimiter) {
-            return sm::CHAR_TYPE_DELIMITER;
-        }
-        if ($char == $this->quote) {
-            return sm::CHAR_TYPE_QUOTE;
-        }
-        if ($char == $this->escape) {
-            return sm::CHAR_TYPE_ESCAPE;
-        }
-        if (ctype_space($char)) {
-            return sm::CHAR_TYPE_BLANK;
-        }
-        return sm::CHAR_TYPE_OTHER;
+        return $type;
     }
 
     private function addCharToField($char)
