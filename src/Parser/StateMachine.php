@@ -47,34 +47,12 @@ class StateMachine extends MachineOfMachines
   
     private function addNewFieldTransitions()
     {
-        $this->addTransition(
-            self::STATE_NEW_FIELD,
-            [self::CHAR_TYPE_DELIMITER],
-            self::STATE_NEW_FIELD
-        );
-
-        $this->addTransition(
-            self::STATE_NEW_FIELD,
-            [self::CHAR_TYPE_BLANK],
-            self::STATE_NO_CAPTURE
-        );
+        $this->recordEndAndNewFielCommons(self::STATE_NEW_FIELD);
 
         $this->addTransition(
             self::STATE_NEW_FIELD,
             [self::CHAR_TYPE_RECORD_END],
             self::STATE_RECORD_END
-        );
-
-        $this->addTransition(
-            self::STATE_NEW_FIELD,
-            [self::CHAR_TYPE_OTHER],
-            self::STATE_CAPTURE
-        );
-
-        $this->addTransition(
-            self::STATE_NEW_FIELD,
-            [self::CHAR_TYPE_QUOTE],
-            self::STATE_QUOTE_INITIAL
         );
     }
 
@@ -122,37 +100,42 @@ class StateMachine extends MachineOfMachines
         );
     }
 
-    private function addRecordEndTransitions()
+    private function recordEndAndNewFielCommons($state)
     {
         $this->addTransition(
-            self::STATE_RECORD_END,
+            $state,
             [self::CHAR_TYPE_DELIMITER],
             self::STATE_NEW_FIELD
         );
 
         $this->addTransition(
-            self::STATE_RECORD_END,
+            $state,
             [self::CHAR_TYPE_BLANK],
             self::STATE_NO_CAPTURE
         );
 
         $this->addTransition(
-            self::STATE_RECORD_END,
-            [self::CHAR_TYPE_RECORD_END],
-            self::STATE_REDUNDANT_RECORD_END
-        );
-
-        $this->addTransition(
-            self::STATE_RECORD_END,
+            $state,
             [self::CHAR_TYPE_OTHER],
             self::STATE_CAPTURE
         );
 
         $this->addTransition(
-            self::STATE_RECORD_END,
+            $state,
             [self::CHAR_TYPE_QUOTE],
             self::STATE_QUOTE_INITIAL
         );
+    }
+
+    private function addRecordEndTransitions()
+    {
+        $this->recordEndAndNewFielCommons(self::STATE_RECORD_END);
+
+         $this->addTransition(
+             self::STATE_RECORD_END,
+             [self::CHAR_TYPE_RECORD_END],
+             self::STATE_REDUNDANT_RECORD_END
+         );
     }
 
     private function addRedundantRecordEndTranstions()
@@ -193,12 +176,6 @@ class StateMachine extends MachineOfMachines
             self::STATE_CAPTURE,
             [self::CHAR_TYPE_RECORD_END],
             self::STATE_RECORD_END
-        );
-
-        $this->addTransition(
-            self::STATE_CAPTURE,
-            [self::CHAR_TYPE_ESCAPE],
-            self::STATE_ESCAPE
         );
     }
 
