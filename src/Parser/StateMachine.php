@@ -78,42 +78,47 @@ class StateMachine extends MachineOfMachines
         );
     }
 
-    private function addNoCaptureTransitions()
+    private function noCaptureAndRedundantRecordEndCommon($state)
     {
         $this->addTransition(
-            self::STATE_NO_CAPTURE,
+            $state,
             [self::CHAR_TYPE_BLANK],
             self::STATE_NO_CAPTURE
         );
 
         $this->addTransition(
-            self::STATE_NO_CAPTURE,
+            $state,
             [self::CHAR_TYPE_OTHER],
             self::STATE_CAPTURE
         );
 
         $this->addTransition(
-            self::STATE_NO_CAPTURE,
+            $state,
             [self::CHAR_TYPE_QUOTE],
             self::STATE_QUOTE_INITIAL
         );
 
         $this->addTransition(
-            self::STATE_NO_CAPTURE,
-            [self::CHAR_TYPE_RECORD_END],
-            self::STATE_RECORD_END
-        );
-
-        $this->addTransition(
-            self::STATE_NO_CAPTURE,
+            $state,
             [self::CHAR_TYPE_DELIMITER],
             self::STATE_NEW_FIELD
         );
 
         $this->addTransition(
-            self::STATE_NO_CAPTURE,
+            $state,
             [self::CHAR_TYPE_ESCAPE],
             self::STATE_ESCAPE
+        );
+    }
+
+    private function addNoCaptureTransitions()
+    {
+        $this->noCaptureAndRedundantRecordEndCommon(self::STATE_NO_CAPTURE);
+
+        $this->addTransition(
+            self::STATE_NO_CAPTURE,
+            [self::CHAR_TYPE_RECORD_END],
+            self::STATE_RECORD_END
         );
     }
 
@@ -152,40 +157,12 @@ class StateMachine extends MachineOfMachines
 
     private function addRedundantRecordEndTranstions()
     {
-        $this->addTransition(
-            self::STATE_REDUNDANT_RECORD_END,
-            [self::CHAR_TYPE_BLANK],
-            self::STATE_NO_CAPTURE
-        );
-
-        $this->addTransition(
-            self::STATE_REDUNDANT_RECORD_END,
-            [self::CHAR_TYPE_OTHER],
-            self::STATE_CAPTURE
-        );
-
-        $this->addTransition(
-            self::STATE_REDUNDANT_RECORD_END,
-            [self::CHAR_TYPE_QUOTE],
-            self::STATE_QUOTE_INITIAL
-        );
+        $this->noCaptureAndRedundantRecordEndCommon(self::STATE_REDUNDANT_RECORD_END);
 
         $this->addTransition(
             self::STATE_REDUNDANT_RECORD_END,
             [self::CHAR_TYPE_RECORD_END],
             self::STATE_REDUNDANT_RECORD_END
-        );
-
-        $this->addTransition(
-            self::STATE_REDUNDANT_RECORD_END,
-            [self::CHAR_TYPE_DELIMITER],
-            self::STATE_NEW_FIELD
-        );
-
-        $this->addTransition(
-            self::STATE_REDUNDANT_RECORD_END,
-            [self::CHAR_TYPE_ESCAPE],
-            self::STATE_ESCAPE
         );
     }
 
