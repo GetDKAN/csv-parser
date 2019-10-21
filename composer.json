@@ -15,8 +15,8 @@
         }
     },
     "require": {
-        "fmizzell/maquina": "~1.0.1",
-        "getdkan/contracts": "dev-loosen-storage-contracts",
+        "fmizzell/maquina": "^1.0.1",
+        "getdkan/contracts": "^0.2.0",
         "ext-json": "*"
     },
     "require-dev": {
