@@ -16,7 +16,7 @@
     },
     "require": {
         "fmizzell/maquina": "^1.0.1",
-        "getdkan/contracts": "^0.2.0",
+        "getdkan/contracts": "^1.0.0",
         "ext-json": "*"
     },
     "require-dev": {
