@@ -7,7 +7,7 @@ use Contracts\ParserInterface;
 use Maquina\StateMachine\MachineOfMachines;
 use CsvParser\Parser\StateMachine as sm;
 
-class Csv implements ParserInterface
+class Csv implements ParserInterface, \JsonSerializable
 {
     private $delimiter;
     private $quote;
