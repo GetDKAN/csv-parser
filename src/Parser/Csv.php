@@ -83,11 +83,11 @@ class Csv implements ParserInterface, \JsonSerializable
 
     public function getRecords() : array
     {
-      $records = [];
-      while ($record = $this->getRecord()) {
-        $records[] = $record;
-      }
-      return $records;
+        $records = [];
+        while ($record = $this->getRecord()) {
+            $records[] = $record;
+        }
+        return $records;
     }
 
     public function reset()
