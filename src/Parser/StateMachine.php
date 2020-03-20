@@ -31,7 +31,7 @@ class StateMachine extends MachineOfMachines
 
         $this->addEndState(self::STATE_NEW_FIELD);
         $this->addEndState(self::STATE_RECORD_END);
-    
+
         $this->addNewFieldTransitions();
         $this->addNoCaptureTransitions();
         $this->addRecordEndTransitions();
@@ -44,10 +44,10 @@ class StateMachine extends MachineOfMachines
         $this->addQuoteEscapeTransitions();
         $this->addQuoteFinalTransitions();
     }
-  
+
     private function addNewFieldTransitions()
     {
-        $this->recordEndAndNewFielCommons(self::STATE_NEW_FIELD);
+        $this->recordEndAndNewFieldCommons(self::STATE_NEW_FIELD);
 
         $this->addTransition(
             self::STATE_NEW_FIELD,
@@ -100,7 +100,7 @@ class StateMachine extends MachineOfMachines
         );
     }
 
-    private function recordEndAndNewFielCommons($state)
+    private function recordEndAndNewFieldCommons($state)
     {
         $this->addTransition(
             $state,
@@ -129,7 +129,7 @@ class StateMachine extends MachineOfMachines
 
     private function addRecordEndTransitions()
     {
-        $this->recordEndAndNewFielCommons(self::STATE_RECORD_END);
+        $this->recordEndAndNewFieldCommons(self::STATE_RECORD_END);
 
          $this->addTransition(
              self::STATE_RECORD_END,
