@@ -43,6 +43,7 @@ class Csv implements ParserInterface, \JsonSerializable
         $this->escape = $escape;
         $this->reset();
         $this->machine = new StateMachine();
+        $this->machine->stopRecording();
     }
 
     public function feed(string $chunk)
@@ -213,6 +214,7 @@ class Csv implements ParserInterface, \JsonSerializable
         $p = $reflector->getProperty('machine');
         $p->setAccessible(true);
         $machine = new StateMachine();
+        $machine->stopRecording();
         $machine = MachineOfMachines::hydrate(json_encode($data->machine), $machine);
 
         $p->setValue($object, $machine);
