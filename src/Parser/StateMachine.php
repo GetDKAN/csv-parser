@@ -31,6 +31,7 @@ class StateMachine extends MachineOfMachines
 
         $this->addEndState(self::STATE_NEW_FIELD);
         $this->addEndState(self::STATE_RECORD_END);
+        $this->addEndState(self::STATE_REDUNDANT_RECORD_END);
 
         $this->addNewFieldTransitions();
         $this->addNoCaptureTransitions();

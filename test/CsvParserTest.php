@@ -351,6 +351,12 @@ class CsvParserTest extends \PHPUnit\Framework\TestCase
         $values = ['G', 'B'];
         $this->assertNumberOfFieldsAndValues($record, $values);
         $this->assertNull($parser->getRecord());
+
+        $parser = $this->parse("a,b\r\n");
+        $record = $parser->getRecord();
+        $values = ['a', 'b'];
+        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertNull($parser->getRecord());
     }
 
     public function testSerialization()
