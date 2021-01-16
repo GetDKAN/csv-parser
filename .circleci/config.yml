@@ -9,9 +9,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Setup dependencies
+          name: Setup DDEV
           command: |
-            sudo composer self-update
             curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
       - run:
           name: Setup Code Climate test-reporter
