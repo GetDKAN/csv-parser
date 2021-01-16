@@ -22,6 +22,7 @@ jobs:
           command: |
             ddev start
             ddev xdebug
+            ddev composer install
             ./cc-test-reporter before-build
             ddev exec ./vendor/bin/phpunit -dxdebug.coverage_enable=1 --testsuite all --coverage-clover clover.xml
             ./cc-test-reporter after-build --coverage-input-type clover --exit-code $?
