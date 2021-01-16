@@ -12,7 +12,7 @@ jobs:
           name: Setup dependencies
           command: |
             sudo composer self-update
-            composer install -n --prefer-dist
+            curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
       - run:
           name: Setup Code Climate test-reporter
           command: |
@@ -21,6 +21,8 @@ jobs:
       - run:
           name: Run tests
           command: |
+            ddev start
+            ddev xdebug
             ./cc-test-reporter before-build
-            vendor/bin/phpunit -dxdebug.coverage_enable=1 --testsuite all --coverage-clover clover.xml
+            ddev exec ./vendor/bin/phpunit -dxdebug.coverage_enable=1 --testsuite all --coverage-clover clover.xml
             ./cc-test-reporter after-build --coverage-input-type clover --exit-code $?
