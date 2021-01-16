@@ -26,4 +26,5 @@ jobs:
             ddev composer install
             ./cc-test-reporter before-build
             ddev exec ./vendor/bin/phpunit --testsuite all --coverage-clover clover.xml
+            sed -i 's+/var/www/html/+/home/circleci/repo/+g' clover.xml
             ./cc-test-reporter after-build --coverage-input-type clover --exit-code $?
