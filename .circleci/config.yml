@@ -25,6 +25,8 @@ jobs:
             ddev composer install
             ./cc-test-reporter before-build
             ddev exec ./vendor/bin/phpunit --testsuite all --coverage-clover clover.xml
+            ls /var
+            ls /var/www
             mkdir -p /var/www
             ln -s . /var/www/html
             ./cc-test-reporter after-build --coverage-input-type clover --exit-code $?
