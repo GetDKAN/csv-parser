@@ -372,4 +372,61 @@ class CsvParserTest extends \PHPUnit\Framework\TestCase
         $record2 = $parser2->getRecord();
         $this->assertEquals($record2[0], 'e');
     }
+
+    public function testEndingWithNewLineString()
+    {
+        $parser = $this->parse(",,\n,,\n");
+        $record = $parser->getRecord();
+        $values = ['', '', ''];
+        $this->assertNumberOfFieldsAndValues($record, $values);
+        $record = $parser->getRecord();
+        $values = ['', '', ''];
+        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertNull($parser->getRecord());
+    }
+
+    public function testEndingWithWindowsNewLineString()
+    {
+        $parser = $this->parse(",,\r\n,,\r\n");
+        $record = $parser->getRecord();
+        $values = ['', '', ''];
+        $this->assertNumberOfFieldsAndValues($record, $values);
+        $record = $parser->getRecord();
+        $values = ['', '', ''];
+        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertNull($parser->getRecord());
+    }
+
+    public function testEndingWithMultipleNewLinesString()
+    {
+        $parser = $this->parse(",,\n,,\n\n\n");
+        $record = $parser->getRecord();
+        $values = ['', '', ''];
+        $this->assertNumberOfFieldsAndValues($record, $values);
+        $record = $parser->getRecord();
+        $values = ['', '', ''];
+        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertNull($parser->getRecord());
+    }
+
+    public function testEndingWithMultipleWindowsNewLinesString()
+    {
+        $parser = $this->parse(",,\r\n,,\r\n\r\n\r\n");
+        $record = $parser->getRecord();
+        $values = ['', '', ''];
+        $this->assertNumberOfFieldsAndValues($record, $values);
+        $record = $parser->getRecord();
+        $values = ['', '', ''];
+        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertNull($parser->getRecord());
+    }
+
+    public function testEmptyWindowsNewLineString()
+    {
+        $parser = $this->parse("\r\n");
+        $record = $parser->getRecord();
+        $values = [''];
+        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertNull($parser->getRecord());
+    }
 }
