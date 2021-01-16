@@ -2,7 +2,7 @@ version: 2.0
 jobs:
   build:
     machine:
-      - image: cimg/base:2021.01
+      image: cimg/base:2021.01
     environment:
       CC_TEST_REPORTER_ID: 2ecadaa1fe4b1917c00e1e9e79591bfa4dad375145696201016a1fd090e33577
     working_directory: ~/repo
