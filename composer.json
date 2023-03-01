@@ -8,18 +8,37 @@
             "email": "fmizzell.dev@gmail.com"
         }
     ],
+    "require": {
+        "ext-json": "*",
+        "fmizzell/maquina": "dev-php-81",
+        "getdkan/contracts": "^1.0.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": ">=8.3 <8.5 || >8.5.14 <9.5",
+        "rector/rector": "^0.15.17",
+        "squizlabs/php_codesniffer": "^3.7"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/paul-m/maquina"
+        }
+    ],
     "autoload": {
         "psr-4": {
-            "CsvParser\\": "src/",
+            "CsvParser\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
             "CsvParserTest\\": "test/"
         }
     },
-    "require": {
-        "fmizzell/maquina": "^1.0.1",
-        "getdkan/contracts": "^1.0.0",
-        "ext-json": "*"
-    },
-    "require-dev": {
-        "phpunit/phpunit": ">=7.5 <=9.5"
+    "scripts": {
+        "phpcbf": "./vendor/bin/phpcbf",
+        "phpcs": "./vendor/bin/phpcs",
+        "rector": "./vendor/bin/rector process",
+        "rector-dry-run": "./vendor/bin/rector process --dry-run",
+        "test": "./vendor/bin/phpunit --testsuite all"
     }
 }

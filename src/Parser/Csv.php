@@ -179,6 +179,7 @@ class Csv implements ParserInterface, \JsonSerializable
         }
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return (object) [
