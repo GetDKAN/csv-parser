@@ -1,4 +1,0 @@
-services:
-  web:
-    environment:
-      XDEBUG_MODE: 'coverage'
