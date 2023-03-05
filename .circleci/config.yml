@@ -149,26 +149,24 @@ jobs:
         description: Arguments to `composer update`.
         type: string
     steps:
-      - checkout
-      - update-packages:
-          app-dir: <<parameters.app-dir>>
-          cache-key: composer.json
-          install-flags: <<parameters.install-flags>>
-      - when:
-          condition: <<parameters.report-to-codeclimate>>
-          steps:
-            - install-xdebug
-            - install-cc-test-reporter
-            - run: |
-                ./cc-test-reporter before-build
-                XDEBUG_MODE=coverage composer <<parameters.test-command>> -- --coverage-clover clover.xml
-                ./cc-test-reporter after-build --coverage-input-type clover --exit-code $?
       - when:
           condition:
-            not: <<parameters.report-to-codeclimate>>
+            and:
+              - equal: [ "8.1", <<parameters.version>> ]
+              - equal: [ "", <<parameters.install-flags>> ]
           steps:
-            - run: |
-                XDEBUG_MODE=off composer <<parameters.test-command>>
+            - run-phpunit-tests:
+                report-to-codeclimate: true
+                install-flags: << parameters.install-flags >>
+      - when:
+          condition:
+            not:
+              and:
+                - equal: [ "8.1", <<parameters.version>> ]
+                - equal: [ "", <<parameters.install-flags>> ]
+          steps:
+            - run-phpunit-tests:
+                install-flags: << parameters.install-flags >>
 
 workflows:
   all-tests:
