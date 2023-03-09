@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \CsvParser\Parser\Csv
+ * @coversDefaultClass \CsvParser\Parser\Csv
  */
 class CsvParserTest extends TestCase
 {
