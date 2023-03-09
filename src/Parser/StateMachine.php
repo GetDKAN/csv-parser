@@ -5,25 +5,25 @@ use Maquina\StateMachine\MachineOfMachines;
 
 class StateMachine extends MachineOfMachines
 {
-    const STATE_NEW_FIELD = "s_new_field";
-    const STATE_CAPTURE = "s_capture";
-    const STATE_NO_CAPTURE = "s_no_capture";
-    const STATE_ESCAPE = "s_escape";
-    const STATE_RECORD_END = "s_record_end";
-    const STATE_REDUNDANT_RECORD_END = "s_redundant_record_end";
+    public const STATE_NEW_FIELD = "s_new_field";
+    public const STATE_CAPTURE = "s_capture";
+    public const STATE_NO_CAPTURE = "s_no_capture";
+    public const STATE_ESCAPE = "s_escape";
+    public const STATE_RECORD_END = "s_record_end";
+    public const STATE_REDUNDANT_RECORD_END = "s_redundant_record_end";
 
-    const STATE_QUOTE_INITIAL = "s_q_initial";
-    const STATE_QUOTE_FINAL = "s_q_final";
-    const STATE_QUOTE_CAPTURE = "s_q_capture";
-    const STATE_QUOTE_ESCAPE = "s_q_escape";
-    const STATE_QUOTE_ESCAPE_QUOTE = "s_q_escape_quote";
+    public const STATE_QUOTE_INITIAL = "s_q_initial";
+    public const STATE_QUOTE_FINAL = "s_q_final";
+    public const STATE_QUOTE_CAPTURE = "s_q_capture";
+    public const STATE_QUOTE_ESCAPE = "s_q_escape";
+    public const STATE_QUOTE_ESCAPE_QUOTE = "s_q_escape_quote";
 
-    const CHAR_TYPE_DELIMITER = "c_delimiter";
-    const CHAR_TYPE_QUOTE = "c_quote";
-    const CHAR_TYPE_ESCAPE = "c_escape";
-    const CHAR_TYPE_RECORD_END = "c_record_end";
-    const CHAR_TYPE_BLANK = "c_blank";
-    const CHAR_TYPE_OTHER = "c_other";
+    public const CHAR_TYPE_DELIMITER = "c_delimiter";
+    public const CHAR_TYPE_QUOTE = "c_quote";
+    public const CHAR_TYPE_ESCAPE = "c_escape";
+    public const CHAR_TYPE_RECORD_END = "c_record_end";
+    public const CHAR_TYPE_BLANK = "c_blank";
+    public const CHAR_TYPE_OTHER = "c_other";
 
     public function __construct()
     {

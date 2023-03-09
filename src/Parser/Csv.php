@@ -12,18 +12,18 @@ class Csv implements ParserInterface, \JsonSerializable
     private $delimiter;
     private $quote;
     private $escape;
-    private $recordEnd;
+    private array $recordEnd;
 
     private $records;
     private $fields;
-    private $field;
+    private string $field;
 
     public $machine;
 
     private $lastCharType;
-    private $quoted = false;
+    private bool $quoted = false;
 
-    private $trailingDelimiter = false;
+    private bool $trailingDelimiter = false;
 
     public function activateTrailingDelimiter()
     {

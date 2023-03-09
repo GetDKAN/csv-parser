@@ -3,8 +3,12 @@
 namespace CsvParserTest;
 
 use CsvParser\Parser\Csv;
+use CsvParser\Parser\StateMachine;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \CsvParser\Parser\Csv
+ */
 class CsvParserTest extends TestCase
 {
 
@@ -14,14 +18,6 @@ class CsvParserTest extends TestCase
         $parser->feed($string);
         $parser->finish();
         return $parser;
-    }
-
-    private function assertNumberOfFieldsAndValues($record, $values)
-    {
-        $this->assertEquals(count($values), count($record));
-        foreach ($record as $key => $value) {
-            $this->assertEquals($values[$key], $value);
-        }
     }
 
     public function testEmptyString()
@@ -35,7 +31,7 @@ class CsvParserTest extends TestCase
         $parser = $this->parse(',,');
         $record = $parser->getRecord();
         $values = ['', '', ''];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -44,7 +40,7 @@ class CsvParserTest extends TestCase
         $parser = $this->parse("\n");
         $record = $parser->getRecord();
         $values = [''];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -53,10 +49,10 @@ class CsvParserTest extends TestCase
         $parser = $this->parse(",,\n,,");
         $record = $parser->getRecord();
         $values = ['', '', ''];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $record = $parser->getRecord();
         $values = ['', '', ''];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -65,7 +61,7 @@ class CsvParserTest extends TestCase
         $parser = $this->parse('   ');
         $record = $parser->getRecord();
         $values = [''];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -74,7 +70,7 @@ class CsvParserTest extends TestCase
         $parser = $this->parse('  ,   ,    ');
         $record = $parser->getRecord();
         $values = ['', '', ''];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -83,10 +79,10 @@ class CsvParserTest extends TestCase
         $parser = $this->parse("  \n   ");
         $record = $parser->getRecord();
         $values = [''];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $record = $parser->getRecord();
         $values = [''];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -95,10 +91,10 @@ class CsvParserTest extends TestCase
         $parser = $this->parse("  ,   ,    \n  ,   ,    ");
         $record = $parser->getRecord();
         $values = ['', '', ''];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $record = $parser->getRecord();
         $values = ['', '', ''];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -107,7 +103,7 @@ class CsvParserTest extends TestCase
         $parser = $this->parse('A');
         $record = $parser->getRecord();
         $values = ['A'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -116,7 +112,7 @@ class CsvParserTest extends TestCase
         $parser = $this->parse('A,B,C');
         $record = $parser->getRecord();
         $values = ['A', 'B', 'C'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -125,10 +121,10 @@ class CsvParserTest extends TestCase
         $parser = $this->parse("A\nB");
         $record = $parser->getRecord();
         $values = ['A'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $record = $parser->getRecord();
         $values = ['B'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -137,10 +133,10 @@ class CsvParserTest extends TestCase
         $parser = $this->parse("A,B,C\nD,E,F");
         $record = $parser->getRecord();
         $values = ['A', 'B', 'C'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $record = $parser->getRecord();
         $values = ['D', 'E', 'F'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -149,7 +145,7 @@ class CsvParserTest extends TestCase
         $parser = $this->parse('  A B  ');
         $record = $parser->getRecord();
         $values = ['A B'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -158,7 +154,7 @@ class CsvParserTest extends TestCase
         $parser = $this->parse(' A B ,B  C , CD');
         $record = $parser->getRecord();
         $values = ['A B', 'B  C', 'CD'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -167,10 +163,10 @@ class CsvParserTest extends TestCase
         $parser = $this->parse("A B   \n   B  C");
         $record = $parser->getRecord();
         $values = ['A B'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $record = $parser->getRecord();
         $values = ['B  C'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -179,10 +175,10 @@ class CsvParserTest extends TestCase
         $parser = $this->parse(" AB,B C \n D  E,E   F ");
         $record = $parser->getRecord();
         $values = ['AB', 'B C'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $record = $parser->getRecord();
         $values = ['D  E', 'E   F'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -191,7 +187,7 @@ class CsvParserTest extends TestCase
         $parser = $this->parse('  A \\' . "\n" . 'B\,  ');
         $record = $parser->getRecord();
         $values = ["A \nB,"];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -200,7 +196,7 @@ class CsvParserTest extends TestCase
         $parser = $this->parse(' A \\\B ,B \\' . "\n" . ' C , CD');
         $record = $parser->getRecord();
         $values = ['A \\B', "B \n C", 'CD'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -209,10 +205,10 @@ class CsvParserTest extends TestCase
         $parser = $this->parse('A B \\' . "\n  \n" . ' \\,  B  C ');
         $record = $parser->getRecord();
         $values = ["A B \n"];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $record = $parser->getRecord();
         $values = [',  B  C'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -221,10 +217,10 @@ class CsvParserTest extends TestCase
         $parser = $this->parse(' A \\' . "\n" . ' B,B C ' . "\n" . ' \\\D  E\,,E   F ');
         $record = $parser->getRecord();
         $values = ["A \n B", 'B C'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $record = $parser->getRecord();
         $values = ['\D  E,', 'E   F'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -233,7 +229,7 @@ class CsvParserTest extends TestCase
         $parser = $this->parse('""');
         $record = $parser->getRecord();
         $values = [''];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -242,7 +238,7 @@ class CsvParserTest extends TestCase
         $parser = $this->parse('" A B " , " B ' . "\n" . ' C"');
         $record = $parser->getRecord();
         $values = [' A B ', " B \n C"];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -251,10 +247,10 @@ class CsvParserTest extends TestCase
         $parser = $this->parse('  " A B ' . "\n" . '"  ' . "\n" . ' ", B \" C "');
         $record = $parser->getRecord();
         $values = [" A B \n"];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $record = $parser->getRecord();
         $values = [', B " C '];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -263,10 +259,10 @@ class CsvParserTest extends TestCase
         $parser = $this->parse(' "A '. "\n" . ' B"  , "B C" ' . "\n" . ' "\\\D  E," , "E   F" ');
         $record = $parser->getRecord();
         $values = ["A \n B", 'B C'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $record = $parser->getRecord();
         $values = ['\D  E,', 'E   F'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -275,17 +271,17 @@ class CsvParserTest extends TestCase
         $parser = $this->parse('"S ""H"""');
         $record = $parser->getRecord();
         $values = ['S "H"'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
         $parser = $this->parse('"S ""H"" S"');
         $record = $parser->getRecord();
         $values = ['S "H" S'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
         $parser = $this->parse('"""H"" S"');
         $record = $parser->getRecord();
         $values = ['"H" S'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -304,7 +300,7 @@ class CsvParserTest extends TestCase
         $parser->finish();
         $record = $parser->getRecord();
         $values = ['S "H"'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -313,10 +309,10 @@ class CsvParserTest extends TestCase
         $parser = $this->parse('H,F,' . "\n" . 'G,B,');
         $record = $parser->getRecord();
         $values = ['H', 'F', ''];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $record = $parser->getRecord();
         $values = ['G', 'B', ''];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
 
         $parser = Csv::getParser(",", "\"", "\\", ["\r", "\n"]);
@@ -326,10 +322,10 @@ class CsvParserTest extends TestCase
         $parser->finish();
         $record = $parser->getRecord();
         $values = ['H', 'F'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $record = $parser->getRecord();
         $values = ['G', 'B'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -338,25 +334,25 @@ class CsvParserTest extends TestCase
         $parser = $this->parse('H,F' . "\n\r" . 'G,B');
         $record = $parser->getRecord();
         $values = ['H', 'F'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $record = $parser->getRecord();
         $values = ['G', 'B'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
 
         $parser = $this->parse('H,F' . "\n\r\n" . 'G,B');
         $record = $parser->getRecord();
         $values = ['H', 'F'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $record = $parser->getRecord();
         $values = ['G', 'B'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
 
         $parser = $this->parse("a,b\r\n");
         $record = $parser->getRecord();
         $values = ['a', 'b'];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -385,10 +381,10 @@ class CsvParserTest extends TestCase
         $parser = $this->parse(",,\n,,\n");
         $record = $parser->getRecord();
         $values = ['', '', ''];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $record = $parser->getRecord();
         $values = ['', '', ''];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -397,10 +393,10 @@ class CsvParserTest extends TestCase
         $parser = $this->parse(",,\r\n,,\r\n");
         $record = $parser->getRecord();
         $values = ['', '', ''];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $record = $parser->getRecord();
         $values = ['', '', ''];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -409,10 +405,10 @@ class CsvParserTest extends TestCase
         $parser = $this->parse(",,\n,,\n\n\n");
         $record = $parser->getRecord();
         $values = ['', '', ''];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $record = $parser->getRecord();
         $values = ['', '', ''];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -421,10 +417,10 @@ class CsvParserTest extends TestCase
         $parser = $this->parse(",,\r\n,,\r\n\r\n\r\n");
         $record = $parser->getRecord();
         $values = ['', '', ''];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $record = $parser->getRecord();
         $values = ['', '', ''];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
     }
 
@@ -433,7 +429,33 @@ class CsvParserTest extends TestCase
         $parser = $this->parse("\r\n");
         $record = $parser->getRecord();
         $values = [''];
-        $this->assertNumberOfFieldsAndValues($record, $values);
+        $this->assertEquals($values, $record);
         $this->assertNull($parser->getRecord());
+    }
+
+  /**
+   * @covers ::finish
+   */
+    public function testFinishException()
+    {
+        $this->expectExceptionMessage('Machine did not halt');
+
+        $csv = Csv::getParser();
+        // Set lastCharType to StateMachine::CHAR_TYPE_RECORD_END. Use
+        // reflection since it's not public and doesn't have a setter.
+        $last_char_type = new \ReflectionProperty(Csv::class, 'lastCharType');
+        $last_char_type->setAccessible(true);
+        $last_char_type->setValue($csv, StateMachine::CHAR_TYPE_RECORD_END);
+        // Mock a machine.
+        $machine = $this->getMockBuilder(StateMachine::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['isCurrentlyAtAnEndState'])
+            ->getMock();
+        $machine->method('isCurrentlyAtAnEndState')
+            ->willReturn(false);
+        // Since ::$machine is public, we can set it easily.
+        $csv->machine = $machine;
+        // Finally call it.
+        $csv->finish();
     }
 }

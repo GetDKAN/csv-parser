@@ -15,6 +15,6 @@ class FileTest extends TestCase
 
         $records = $parser->getRecords();
 
-        $this->assertEquals(5, count($records));
+        $this->assertCount(5, $records);
     }
 }
