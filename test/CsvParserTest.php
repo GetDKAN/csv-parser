@@ -3,8 +3,9 @@
 namespace CsvParserTest;
 
 use CsvParser\Parser\Csv;
+use PHPUnit\Framework\TestCase;
 
-class CsvParserTest extends \PHPUnit\Framework\TestCase
+class CsvParserTest extends TestCase
 {
 
     private function parse($string)
