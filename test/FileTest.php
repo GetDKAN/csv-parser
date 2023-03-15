@@ -2,16 +2,19 @@
 
 namespace CsvParserTest;
 
-class FileTest extends \PHPUnit\Framework\TestCase
+use CsvParser\Parser\Csv;
+use PHPUnit\Framework\TestCase;
+
+class FileTest extends TestCase
 {
     public function test()
     {
-        $parser = \CsvParser\Parser\Csv::getParser();
+        $parser = Csv::getParser();
         $parser->feed(file_get_contents(__DIR__ . "/data/countries.csv"));
         $parser->finish();
 
         $records = $parser->getRecords();
 
-        $this->assertEquals(5, count($records));
+        $this->assertCount(5, $records);
     }
 }

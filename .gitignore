@@ -1,3 +1,5 @@
+.ddev
+.idea
 vendor
 composer.lock
 /html
