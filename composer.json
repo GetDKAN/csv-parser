@@ -11,8 +11,8 @@
     "require": {
         "php": ">=7.4",
         "ext-json": "*",
-        "fmizzell/maquina": "dev-master#e5772c08fd1e6e3de5e5b21f89de20f385ff1adb",
-        "getdkan/contracts": "^1.0.0"
+        "fmizzell/maquina": "^1.1.1",
+        "getdkan/contracts": "^1.1.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.6",

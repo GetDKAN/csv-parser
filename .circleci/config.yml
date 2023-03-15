@@ -176,5 +176,5 @@ workflows:
       - matrix-conditions:
           matrix:
             parameters:
-              version: ["7.4", "8.0", "8.1"]
+              version: ["8.1", "8.0", "7.4"]
               install-flags: ["", "--prefer-lowest"]
