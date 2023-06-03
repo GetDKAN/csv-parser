@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 class CsvParserTest extends TestCase
 {
 
-    private function parse($string)
+    private function parse(string $string)
     {
         $parser = Csv::getParser(',', '"', "\\", ["\r", "\n"]);
         $parser->feed($string);
@@ -21,13 +21,13 @@ class CsvParserTest extends TestCase
         return $parser;
     }
 
-    public function testEmptyString()
+    public function testEmptyString(): void
     {
         $this->expectExceptionMessage("The CSV parser can not parse empty chunks.");
         $this->parse('');
     }
 
-    public function testJustDelimiters()
+    public function testJustDelimiters(): void
     {
         $parser = $this->parse(',,');
         $record = $parser->getRecord();
@@ -36,7 +36,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testEmptyNewLineString()
+    public function testEmptyNewLineString(): void
     {
         $parser = $this->parse("\n");
         $record = $parser->getRecord();
@@ -45,7 +45,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testJustDelimitersNewLineString()
+    public function testJustDelimitersNewLineString(): void
     {
         $parser = $this->parse(",,\n,,");
         $record = $parser->getRecord();
@@ -57,7 +57,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testBlankString()
+    public function testBlankString(): void
     {
         $parser = $this->parse('   ');
         $record = $parser->getRecord();
@@ -66,7 +66,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testBlankJustDelimiters()
+    public function testBlankJustDelimiters(): void
     {
         $parser = $this->parse('  ,   ,    ');
         $record = $parser->getRecord();
@@ -75,7 +75,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testBlankNewLineString()
+    public function testBlankNewLineString(): void
     {
         $parser = $this->parse("  \n   ");
         $record = $parser->getRecord();
@@ -87,7 +87,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testBlankJustDelimitersNewLineString()
+    public function testBlankJustDelimitersNewLineString(): void
     {
         $parser = $this->parse("  ,   ,    \n  ,   ,    ");
         $record = $parser->getRecord();
@@ -99,7 +99,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testOther()
+    public function testOther(): void
     {
         $parser = $this->parse('A');
         $record = $parser->getRecord();
@@ -108,7 +108,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testOtherJustDelimiters()
+    public function testOtherJustDelimiters(): void
     {
         $parser = $this->parse('A,B,C');
         $record = $parser->getRecord();
@@ -117,7 +117,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testOtherNewLineString()
+    public function testOtherNewLineString(): void
     {
         $parser = $this->parse("A\nB");
         $record = $parser->getRecord();
@@ -129,7 +129,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testOtherJustDelimitersNewLineString()
+    public function testOtherJustDelimitersNewLineString(): void
     {
         $parser = $this->parse("A,B,C\nD,E,F");
         $record = $parser->getRecord();
@@ -141,7 +141,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testOtherBlank()
+    public function testOtherBlank(): void
     {
         $parser = $this->parse('  A B  ');
         $record = $parser->getRecord();
@@ -150,7 +150,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testOtherBlankJustDelimiters()
+    public function testOtherBlankJustDelimiters(): void
     {
         $parser = $this->parse(' A B ,B  C , CD');
         $record = $parser->getRecord();
@@ -159,7 +159,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testOtherBlankNewLineString()
+    public function testOtherBlankNewLineString(): void
     {
         $parser = $this->parse("A B   \n   B  C");
         $record = $parser->getRecord();
@@ -171,7 +171,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testOtherBlankJustDelimitersNewLineString()
+    public function testOtherBlankJustDelimitersNewLineString(): void
     {
         $parser = $this->parse(" AB,B C \n D  E,E   F ");
         $record = $parser->getRecord();
@@ -183,7 +183,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testOtherBlankEscape()
+    public function testOtherBlankEscape(): void
     {
         $parser = $this->parse('  A \\' . "\n" . 'B\,  ');
         $record = $parser->getRecord();
@@ -192,7 +192,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testOtherBlankEscapeJustDelimiters()
+    public function testOtherBlankEscapeJustDelimiters(): void
     {
         $parser = $this->parse(' A \\\B ,B \\' . "\n" . ' C , CD');
         $record = $parser->getRecord();
@@ -201,7 +201,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testOtherBlankEscapeNewLineString()
+    public function testOtherBlankEscapeNewLineString(): void
     {
         $parser = $this->parse('A B \\' . "\n  \n" . ' \\,  B  C ');
         $record = $parser->getRecord();
@@ -213,7 +213,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testOtherBlankEscapeJustDelimitersNewLineString()
+    public function testOtherBlankEscapeJustDelimitersNewLineString(): void
     {
         $parser = $this->parse(' A \\' . "\n" . ' B,B C ' . "\n" . ' \\\D  E\,,E   F ');
         $record = $parser->getRecord();
@@ -225,7 +225,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testQuotes()
+    public function testQuotes(): void
     {
         $parser = $this->parse('""');
         $record = $parser->getRecord();
@@ -234,7 +234,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testQuoteDelimiters()
+    public function testQuoteDelimiters(): void
     {
         $parser = $this->parse('" A B " , " B ' . "\n" . ' C"');
         $record = $parser->getRecord();
@@ -243,7 +243,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testQuoteNewLineString()
+    public function testQuoteNewLineString(): void
     {
         $parser = $this->parse('  " A B ' . "\n" . '"  ' . "\n" . ' ", B \" C "');
         $record = $parser->getRecord();
@@ -255,7 +255,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testQuoteJustDelimitersNewLineString()
+    public function testQuoteJustDelimitersNewLineString(): void
     {
         $parser = $this->parse(' "A '. "\n" . ' B"  , "B C" ' . "\n" . ' "\\\D  E," , "E   F" ');
         $record = $parser->getRecord();
@@ -267,7 +267,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testDoubleQuoteEscaping()
+    public function testDoubleQuoteEscaping(): void
     {
         $parser = $this->parse('"S ""H"""');
         $record = $parser->getRecord();
@@ -291,7 +291,7 @@ class CsvParserTest extends TestCase
      * We went to make sure that when a string is cut in the middle of double
      * quote scaping, that the parser can still handle it without problems.
      */
-    public function testBrokenLookAhead()
+    public function testBrokenLookAhead(): void
     {
         $string1 = '"S "';
         $string2 = '"H"""';
@@ -305,7 +305,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testTrailingDelimiter()
+    public function testTrailingDelimiter(): void
     {
         $parser = $this->parse('H,F,' . "\n" . 'G,B,');
         $record = $parser->getRecord();
@@ -330,7 +330,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testMultiEnd()
+    public function testMultiEnd(): void
     {
         $parser = $this->parse('H,F' . "\n\r" . 'G,B');
         $record = $parser->getRecord();
@@ -357,7 +357,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testSerialization()
+    public function testSerialization(): void
     {
         $parser = Csv::getParser(',', '"', "\\", ["\r", "\n"]);
         $parser->feed("a,b,c,d\n");
@@ -377,7 +377,7 @@ class CsvParserTest extends TestCase
         $this->assertEquals($record2[0], 'e');
     }
 
-    public function testEndingWithNewLineString()
+    public function testEndingWithNewLineString(): void
     {
         $parser = $this->parse(",,\n,,\n");
         $record = $parser->getRecord();
@@ -389,7 +389,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testEndingWithWindowsNewLineString()
+    public function testEndingWithWindowsNewLineString(): void
     {
         $parser = $this->parse(",,\r\n,,\r\n");
         $record = $parser->getRecord();
@@ -401,7 +401,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testEndingWithMultipleNewLinesString()
+    public function testEndingWithMultipleNewLinesString(): void
     {
         $parser = $this->parse(",,\n,,\n\n\n");
         $record = $parser->getRecord();
@@ -413,7 +413,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testEndingWithMultipleWindowsNewLinesString()
+    public function testEndingWithMultipleWindowsNewLinesString(): void
     {
         $parser = $this->parse(",,\r\n,,\r\n\r\n\r\n");
         $record = $parser->getRecord();
@@ -425,7 +425,7 @@ class CsvParserTest extends TestCase
         $this->assertNull($parser->getRecord());
     }
 
-    public function testEmptyWindowsNewLineString()
+    public function testEmptyWindowsNewLineString(): void
     {
         $parser = $this->parse("\r\n");
         $record = $parser->getRecord();
@@ -437,7 +437,7 @@ class CsvParserTest extends TestCase
   /**
    * @covers ::finish
    */
-    public function testFinishException()
+    public function testFinishException(): void
     {
         $this->expectExceptionMessage('Machine did not halt');
 
