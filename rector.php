@@ -8,33 +8,37 @@ use Rector\DeadCode\Rector\ClassMethod\RemoveUselessParamTagRector;
 use Rector\DeadCode\Rector\ClassMethod\RemoveUselessReturnTagRector;
 use Rector\DeadCode\Rector\Property\RemoveUselessVarTagRector;
 use Rector\Php73\Rector\FuncCall\JsonThrowOnErrorRector;
-use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
+use Rector\TypeDeclaration\Rector\ClassMethod\ArrayShapeFromConstantArrayReturnRector;
+use Rector\TypeDeclaration\Rector\ClassMethod\AddMethodCallBasedStrictParamTypeRector;
 
 return static function (RectorConfig $rectorConfig): void {
-
-    $rectorConfig->phpVersion(PhpVersion::PHP_74);
-
     $rectorConfig->paths([
-        __DIR__ . '/src',
-        __DIR__ . '/test',
+    __DIR__ . '/src',
+    __DIR__ . '/test',
     ]);
 
+  // Our base version of PHP.
+    $rectorConfig->phpVersion(PhpVersion::PHP_74);
+
     $rectorConfig->sets([
-    // Try to figure out type hints.
-    SetList::TYPE_DECLARATION,
-    // Bring us up to PHP 7.4.
-    LevelSetList::UP_TO_PHP_74,
+        SetList::PHP_82,
+        // Please no dead code or unneeded variables.
+        SetList::DEAD_CODE,
+        // Try to figure out type hints.
+        SetList::TYPE_DECLARATION,
     ]);
 
     $rectorConfig->skip([
-    // Don't throw errors on JSON parse problems. Yet.
-    // @todo Throw errors and deal with them appropriately.
-    JsonThrowOnErrorRector::class,
-    // We like our tags.
-    RemoveUselessParamTagRector::class,
-    RemoveUselessReturnTagRector::class,
-    RemoveUselessVarTagRector::class,
+        // Don't throw errors on JSON parse problems. Yet.
+        // @todo Throw errors and deal with them appropriately.
+        JsonThrowOnErrorRector::class,
+        // We like our tags. Please don't remove them.
+        RemoveUselessParamTagRector::class,
+        RemoveUselessReturnTagRector::class,
+        RemoveUselessVarTagRector::class,
+        ArrayShapeFromConstantArrayReturnRector::class,
+        AddMethodCallBasedStrictParamTypeRector::class,
     ]);
 
     $rectorConfig->importNames();

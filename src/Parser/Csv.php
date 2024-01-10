@@ -54,7 +54,7 @@ class Csv implements ParserInterface, \JsonSerializable
         if (strlen($chunk) > 0) {
             $chars = str_split($chunk);
             foreach ($chars as $char) {
-                $initial_states = $this->machine->getCurrentStates();
+                $this->machine->getCurrentStates();
                 $char_type = $this->getCharType($char);
 
                 $this->machine->processInput($char_type);
@@ -62,7 +62,7 @@ class Csv implements ParserInterface, \JsonSerializable
                 $this->lastCharType = $char_type;
                 $end_states = $this->machine->getCurrentStates();
 
-                $this->processTransition($initial_states, $end_states, $char);
+                $this->processTransition($end_states, $char);
             }
         } else {
             throw new \Exception("The CSV parser can not parse empty chunks.");
@@ -162,7 +162,7 @@ class Csv implements ParserInterface, \JsonSerializable
         $this->field = "";
     }
 
-    private function processTransition($initialStates, $endStates, string $input): void
+    private function processTransition($endStates, string $input): void
     {
         foreach ($endStates as $endState) {
             $this->processTransitionHelper($endState, $input);
