@@ -54,7 +54,6 @@ class Csv implements ParserInterface, \JsonSerializable
         if (strlen($chunk) > 0) {
             $chars = str_split($chunk);
             foreach ($chars as $char) {
-                $this->machine->getCurrentStates();
                 $char_type = $this->getCharType($char);
 
                 $this->machine->processInput($char_type);
