@@ -18,6 +18,9 @@ class Csv implements ParserInterface, \JsonSerializable
     private $fields;
     private string $field;
 
+    /**
+     * @var sm
+     */
     public $machine;
 
     private $lastCharType;
@@ -25,12 +28,12 @@ class Csv implements ParserInterface, \JsonSerializable
 
     private bool $trailingDelimiter = false;
 
-    public function activateTrailingDelimiter()
+    public function activateTrailingDelimiter(): void
     {
         $this->trailingDelimiter = true;
     }
 
-    public static function getParser($delimiter = ",", $quote = '"', $escape = "\\", $record_end = ["\n", "\r"])
+    public static function getParser($delimiter = ",", $quote = '"', $escape = "\\", $record_end = ["\n", "\r"]): self
     {
         return new self($delimiter, $quote, $escape, $record_end);
     }
@@ -51,7 +54,6 @@ class Csv implements ParserInterface, \JsonSerializable
         if (strlen($chunk) > 0) {
             $chars = str_split($chunk);
             foreach ($chars as $char) {
-                $initial_states = $this->machine->getCurrentStates();
                 $char_type = $this->getCharType($char);
 
                 $this->machine->processInput($char_type);
@@ -59,7 +61,7 @@ class Csv implements ParserInterface, \JsonSerializable
                 $this->lastCharType = $char_type;
                 $end_states = $this->machine->getCurrentStates();
 
-                $this->processTransition($initial_states, $end_states, $char);
+                $this->processTransition($end_states, $char);
             }
         } else {
             throw new \Exception("The CSV parser can not parse empty chunks.");
@@ -91,7 +93,7 @@ class Csv implements ParserInterface, \JsonSerializable
         return $records;
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->field = "";
         $this->fields = [];
@@ -116,7 +118,7 @@ class Csv implements ParserInterface, \JsonSerializable
         }
     }
 
-    private function getCharType($char)
+    private function getCharType(string $char)
     {
         $type = sm::CHAR_TYPE_OTHER;
         if (in_array($char, $this->recordEnd)) {
@@ -133,12 +135,12 @@ class Csv implements ParserInterface, \JsonSerializable
         return $type;
     }
 
-    private function addCharToField($char)
+    private function addCharToField(string $char): void
     {
         $this->field .= $char;
     }
 
-    private function createNewRecord()
+    private function createNewRecord(): void
     {
         $this->createNewField();
         if (!empty($this->fields)) {
@@ -147,7 +149,7 @@ class Csv implements ParserInterface, \JsonSerializable
         }
     }
 
-    private function createNewField()
+    private function createNewField(): void
     {
         if ($this->quoted) {
             $this->fields[] = $this->field;
@@ -159,14 +161,14 @@ class Csv implements ParserInterface, \JsonSerializable
         $this->field = "";
     }
 
-    private function processTransition($initialStates, $endStates, $input)
+    private function processTransition($endStates, string $input): void
     {
         foreach ($endStates as $endState) {
             $this->processTransitionHelper($endState, $input);
         }
     }
 
-    private function processTransitionHelper($endState, $input)
+    private function processTransitionHelper($endState, string $input): void
     {
         if ($endState == sm::STATE_RECORD_END) {
             $this->createNewRecord();

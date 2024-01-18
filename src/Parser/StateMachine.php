@@ -46,7 +46,7 @@ class StateMachine extends MachineOfMachines
         $this->addQuoteFinalTransitions();
     }
 
-    private function addNewFieldTransitions()
+    private function addNewFieldTransitions(): void
     {
         $this->recordEndAndNewFieldCommons(self::STATE_NEW_FIELD);
 
@@ -57,7 +57,7 @@ class StateMachine extends MachineOfMachines
         );
     }
 
-    private function noCaptureAndRedundantRecordEndCommon($state)
+    private function noCaptureAndRedundantRecordEndCommon(string $state): void
     {
         $this->addTransition(
             $state,
@@ -90,7 +90,7 @@ class StateMachine extends MachineOfMachines
         );
     }
 
-    private function addNoCaptureTransitions()
+    private function addNoCaptureTransitions(): void
     {
         $this->noCaptureAndRedundantRecordEndCommon(self::STATE_NO_CAPTURE);
 
@@ -101,7 +101,7 @@ class StateMachine extends MachineOfMachines
         );
     }
 
-    private function recordEndAndNewFieldCommons($state)
+    private function recordEndAndNewFieldCommons(string $state): void
     {
         $this->addTransition(
             $state,
@@ -128,7 +128,7 @@ class StateMachine extends MachineOfMachines
         );
     }
 
-    private function addRecordEndTransitions()
+    private function addRecordEndTransitions(): void
     {
         $this->recordEndAndNewFieldCommons(self::STATE_RECORD_END);
 
@@ -139,7 +139,7 @@ class StateMachine extends MachineOfMachines
          );
     }
 
-    private function addRedundantRecordEndTranstions()
+    private function addRedundantRecordEndTranstions(): void
     {
         $this->noCaptureAndRedundantRecordEndCommon(self::STATE_REDUNDANT_RECORD_END);
 
@@ -150,7 +150,7 @@ class StateMachine extends MachineOfMachines
         );
     }
 
-    private function addCaptureTransitions()
+    private function addCaptureTransitions(): void
     {
         $this->addTransition(
             self::STATE_CAPTURE,
@@ -180,7 +180,7 @@ class StateMachine extends MachineOfMachines
         );
     }
 
-    private function addEscapeTransitions()
+    private function addEscapeTransitions(): void
     {
         $this->addTransition(
             self::STATE_ESCAPE,
@@ -196,7 +196,7 @@ class StateMachine extends MachineOfMachines
         );
     }
 
-    private function addQuoteInitialTransitions()
+    private function addQuoteInitialTransitions(): void
     {
         $this->addTransition(
             self::STATE_QUOTE_INITIAL,
@@ -223,7 +223,7 @@ class StateMachine extends MachineOfMachines
         );
     }
 
-    private function addQuoteCaptureTransitions()
+    private function addQuoteCaptureTransitions(): void
     {
         $this->addTransition(
             self::STATE_QUOTE_CAPTURE,
@@ -255,7 +255,7 @@ class StateMachine extends MachineOfMachines
         );
     }
 
-    private function addQuoteEscapeQuoteTransitions()
+    private function addQuoteEscapeQuoteTransitions(): void
     {
         $this->addTransition(
             self::STATE_QUOTE_ESCAPE_QUOTE,
@@ -264,7 +264,7 @@ class StateMachine extends MachineOfMachines
         );
     }
 
-    private function addQuoteEscapeTransitions()
+    private function addQuoteEscapeTransitions(): void
     {
         $this->addTransition(
             self::STATE_QUOTE_ESCAPE,
@@ -280,7 +280,7 @@ class StateMachine extends MachineOfMachines
         );
     }
 
-    private function addQuoteFinalTransitions()
+    private function addQuoteFinalTransitions(): void
     {
         $this->addTransition(
             self::STATE_QUOTE_FINAL,

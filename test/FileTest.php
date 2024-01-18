@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class FileTest extends TestCase
 {
-    public function test()
+    public function test(): void
     {
         $parser = Csv::getParser();
         $parser->feed(file_get_contents(__DIR__ . "/data/countries.csv"));
