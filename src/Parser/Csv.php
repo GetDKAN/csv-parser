@@ -3,9 +3,8 @@
 
 namespace CsvParser\Parser;
 
-use Contracts\ParserInterface;
-use Maquina\StateMachine\MachineOfMachines;
 use CsvParser\Parser\StateMachine as sm;
+use Maquina\StateMachine\MachineOfMachines;
 
 class Csv implements ParserInterface, \JsonSerializable
 {
