@@ -11,7 +11,8 @@
     "require": {
         "php": ">=7.4",
         "ext-json": "*",
-        "fmizzell/maquina": "^1.1.1"
+        "fmizzell/maquina": "^1.1.1",
+        "getdkan/contracts": "dev-php83"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.6",

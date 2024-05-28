@@ -3,8 +3,9 @@
 
 namespace CsvParser\Parser;
 
-use CsvParser\Parser\StateMachine as sm;
+use Contracts\ParserInterface;
 use Maquina\StateMachine\MachineOfMachines;
+use CsvParser\Parser\StateMachine as sm;
 
 class Csv implements ParserInterface, \JsonSerializable
 {
@@ -48,7 +49,7 @@ class Csv implements ParserInterface, \JsonSerializable
         $this->machine->stopRecording();
     }
 
-    public function feed(string $chunk): void
+    public function feed(string $chunk)
     {
         if (strlen($chunk) > 0) {
             $chars = str_split($chunk);
@@ -103,7 +104,7 @@ class Csv implements ParserInterface, \JsonSerializable
         $this->quoted = false;
     }
 
-    public function finish(): void
+    public function finish()
     {
         // There will be csv strings that do not end in a "end of record" char.
         // This will flush them.
