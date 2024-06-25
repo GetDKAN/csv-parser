@@ -10,9 +10,9 @@
     ],
     "require": {
         "php": ">=7.4",
+        "ext-ctype": "*",
         "ext-json": "*",
-        "fmizzell/maquina": "^1.1.1",
-        "getdkan/contracts": "^1.1.3"
+        "fmizzell/maquina": "^1.1.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.6",
