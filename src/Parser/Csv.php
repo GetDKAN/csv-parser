@@ -13,8 +13,8 @@ class Csv implements ParserInterface, \JsonSerializable
     private $escape;
     private array $recordEnd;
 
-    private $records;
-    private $fields;
+    private array $records;
+    private array $fields;
     private string $field;
 
     /**
@@ -117,7 +117,7 @@ class Csv implements ParserInterface, \JsonSerializable
         }
     }
 
-    private function getCharType(string $char)
+    private function getCharType(string $char): string
     {
         $type = sm::CHAR_TYPE_OTHER;
         if (in_array($char, $this->recordEnd)) {
