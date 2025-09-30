@@ -118,6 +118,14 @@ commands:
                   XDEBUG_MODE: coverage
                   QLTY_COVERAGE_TOKEN: ${QLTY_COVERAGE_TOKEN}
                 command: composer <<parameters.test-command>> -- --coverage-clover clover.xml
+            - run:
+                name: Upload coverage report to Qlty
+                command: |
+                  touch ~/.bash_profile
+                  curl https://qlty.sh | sh
+                  source ~/.profile
+                  cd $CIRCLE_WORKING_DIRECTORY
+                  qlty coverage publish clover.xml
       - when:
           condition:
             not: <<parameters.report-to-qlty>>
